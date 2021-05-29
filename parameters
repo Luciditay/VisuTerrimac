@@ -1,0 +1,8 @@
+name test1.pgm
+width 250
+height 250
+z_min 10
+z_max 15
+z_near 0.01
+z_far 1000
+fov 60
