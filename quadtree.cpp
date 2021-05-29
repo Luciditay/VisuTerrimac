@@ -16,6 +16,10 @@ void afficherPoint3D(Point3D point) {
     cout << "{"<<point.x << " "<< point.y << " " <<point.z<< "}";
 }
 
+void afficherPoint2D(Point2D point) {
+    cout << "{"<<point.x << " "<< point.y << "}"<<endl;
+}
+
 void afficherNode(Node* node){
     cout << "HG :"; afficherPoint3D(node->pointHG);
     cout << "HD :"; afficherPoint3D(node->pointHD);

@@ -1,6 +1,12 @@
 #ifndef QUADTREE_H
 #define QUADTREE_H
 
+#include "geometry.h"
+#include "quadtree.h"
+
+struct Point2D;
+struct Node;
+
 struct Point3D {
     float x;
     float y;
@@ -24,6 +30,8 @@ typedef struct Node// Each node contains 4 points forming the border of the squa
 Point3D milieuSegment(Point3D p1, Point3D p2, float** image);
 
 void afficherNode(Node* node);
+void afficherPoint3D(Point3D point);
+void afficherPoint2D(Point2D p1); 
 
 void remplirNode(Node* node, Point3D pointHG, Point3D pointHD, Point3D pointBG, Point3D pointBD);
 void initialiserQuadTree(Node* quadTree, float** image, int longueur, int largeur);

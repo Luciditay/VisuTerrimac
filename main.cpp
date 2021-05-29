@@ -10,6 +10,7 @@
 #include "terrain.h"
 #include "loadSDL.h"
 #include "camera.h"
+#include "geometry.h"
 
 using namespace std;
 
@@ -63,10 +64,12 @@ int main(int argc, char const *argv[])
     
     onWindowResized(800, 600, zFar, zNear, fov);
 
-    Point3D camPos = {xSize, ySize, zMax}; //Position de la camera
-    Pointf3D lookAtDirection = {10, 10, -0.8}; //Vecteur directeur (dans quelle direction regarde la camera)
+    
 
-    cout << image->w << image->h<<endl;
+    Point3D camPos = {xSize, ySize, zMax}; //Position de la camera
+    Point3D lookAtDirection = {10, 10, -0.8}; //Vecteur directeur (dans quelle direction regarde la camera)
+    Point3D vectCamera;
+    Triangle* champCamera = (Triangle*) malloc(sizeof(Triangle));
 
     int loop=1;
     while(loop){
@@ -75,10 +78,14 @@ int main(int argc, char const *argv[])
         glDisable(GL_LIGHTING);
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
-        gluLookAt(camPos.x, camPos.y, camPos.z, camPos.x + lookAtDirection.x, camPos.y + lookAtDirection.y, camPos.z + lookAtDirection.z, 0, 0, 1);
+        vectCamera = add3DVect(camPos, lookAtDirection);
+        champCamera = triangleCamera(camPos, vectCamera, fov, zFar);  
+        //afficherTriangle(champCamera);
+        //drawCamera( champCamera);
+
+        gluLookAt(camPos.x, camPos.y, camPos.z, vectCamera.x, vectCamera.y, vectCamera.z, 0, 0, 1);
+        
         glScalef((float) xSize / image->w, (float) ySize / image->h, 1.);
-        // cout << (float) width/image->w<<endl <<endl;
-        // cout << (float) height / image->h<<endl;
         glTranslatef(image->w / 2.f, image->h / 2.f, 0);
         
          
@@ -86,7 +93,7 @@ int main(int argc, char const *argv[])
             drawTerrainFil(&quadTree);
 
         else 
-            drawTerrainTexture(&quadTree, idTexture);
+            drawTerrainTexture(&quadTree, idTexture, champCamera, zMax, zMin);
 
         Uint32 startTime = SDL_GetTicks();
 
