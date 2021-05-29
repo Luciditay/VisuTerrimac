@@ -16,6 +16,7 @@ using namespace std;
 
 
 bool drawFil = false; //True ==> Dessiner en mode fil de fer
+bool drawQuadtree = false; //Dessiner le quadTree
 
 static const Uint32 FRAMERATE_MILLISECONDS = 1000 / 60;
 
@@ -62,9 +63,7 @@ int main(int argc, char const *argv[])
     // GLuint idTexture = textureCarteGraphique(texture3, &IDText);
     
     
-    onWindowResized(800, 600, zFar, zNear, fov);
-
-    
+    onWindowResized(800, 600, zFar, zNear, fov);    
 
     Point3D camPos = {xSize, ySize, zMax}; //Position de la camera
     Point3D lookAtDirection = {10, 10, -0.8}; //Vecteur directeur (dans quelle direction regarde la camera)
@@ -79,21 +78,34 @@ int main(int argc, char const *argv[])
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
         vectCamera = add3DVect(camPos, lookAtDirection);
-        champCamera = triangleCamera(camPos, vectCamera, fov, zFar);  
-        //afficherTriangle(champCamera);
+        champCamera = triangleCamera(sub3DVect({(float) xSize,(float) ySize}, camPos ), lookAtDirection, fov, zFar);  
+        
         //drawCamera( champCamera);
 
-        gluLookAt(camPos.x, camPos.y, camPos.z, vectCamera.x, vectCamera.y, vectCamera.z, 0, 0, 1);
-        
-        glScalef((float) xSize / image->w, (float) ySize / image->h, 1.);
+        gluLookAt(camPos.x, camPos.y, camPos.z, vectCamera.x, vectCamera.y, vectCamera.z, 0, 0, 1);        
         glTranslatef(image->w / 2.f, image->h / 2.f, 0);
-        
-         
-        if (drawFil)
-            drawTerrainFil(&quadTree);
+        glScalef((float) xSize / image->w, (float) ySize / image->h, 1.);
+                 
+        if (drawFil){
+            if (drawQuadtree)
+                drawQuadTreeFil(&quadTree);
+            else
+                drawTerrainFil(&quadTree);
+        }     
 
-        else 
-            drawTerrainTexture(&quadTree, idTexture, champCamera, zMax, zMin);
+        else{
+            if (drawQuadtree)
+                drawQuadTreeTexture(&quadTree, idTexture);
+            else
+                drawTerrainTexture(&quadTree, idTexture, champCamera, zMax, zMin);
+        }
+        glDisable(GL_DEPTH_TEST);
+
+
+        //glScalef((float) xSize / image->w, (float) ySize / image->h, 1.);
+       // glTranslatef(image->w / 2.f, image->h / 2.f, 0);
+        afficherTriangle(champCamera);
+
 
         Uint32 startTime = SDL_GetTicks();
 
@@ -172,6 +184,10 @@ int main(int argc, char const *argv[])
                         
                         case SDLK_f:
                             drawFil=!drawFil; //Active/Désactive le mode draw fil en appuyant sur f
+                            break;
+
+                        case SDLK_n:
+                            drawQuadtree=!drawQuadtree;
                             break;
                     }
                     break;

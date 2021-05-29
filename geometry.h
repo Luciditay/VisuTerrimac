@@ -11,11 +11,19 @@ typedef struct Point2D{
     float y;
 };
 
+Point2D sub2DVect(Point2D p1, Point2D p2);
+
 struct Triangle{
     Point2D p1;
     Point2D p2;
     Point2D p3;
 };
+
+Point3D sub3DVect(Point3D p1, Point3D p2);
+
+bool isInTriangle(Triangle* triangle, Point2D p1);
+
+float determinant(Point2D Vect1, Point2D Vect2);
 
 void afficherTriangle(Triangle* triangle);
 
