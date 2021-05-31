@@ -16,7 +16,14 @@
 
 using namespace std;
 
-int nbreArbres = 10;
+#define GL_TEXTURE_CUBE_MAP_ARB             0x8513
+#define GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB  0x8515
+#define GL_TEXTURE_CUBE_MAP_NEGATIVE_X_ARB  0x8516
+#define GL_TEXTURE_CUBE_MAP_POSITIVE_Y_ARB  0x8517
+#define GL_TEXTURE_CUBE_MAP_NEGATIVE_Y_ARB  0x8518
+#define GL_TEXTURE_CUBE_MAP_POSITIVE_Z_ARB  0x8519
+#define GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB  0x851A
+#define STB_IMAGE_IMPLEMENTATION
 
 
 bool drawFil = false; //True ==> Dessiner en mode fil de fer
@@ -82,6 +89,64 @@ int main(int argc, char const *argv[])
     // SDL_Surface* texture3 = loadTexture(texturePath3);
     // GLuint idTexture = textureCarteGraphique(texture3, &IDText);
     
+
+    /* PARTIE SKYBOX */
+
+
+    // Chargement des textures
+    GLenum texture_faces[6] = {           
+            GL_TEXTURE_CUBE_MAP_NEGATIVE_X_ARB,
+            GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB,
+            GL_TEXTURE_CUBE_MAP_NEGATIVE_Y_ARB,
+            GL_TEXTURE_CUBE_MAP_POSITIVE_Y_ARB,
+            GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB,
+            GL_TEXTURE_CUBE_MAP_POSITIVE_Z_ARB
+        };
+
+
+    SDL_Surface texture_image[6]; 
+    const char* images_paths[6] = {
+        "./Skybox/left.jpg",
+        "./Skybox/right.jpg",
+        "./Skybox/top.jpg",
+        "./Skybox/bottom.jpg",
+        "./Skybox/front.jpg",
+        "./Skybox/back.jpg",
+    };
+    
+
+    for (int i = 0; i < 6; ++i) {
+        texture_image[i] = loadTexture(image_paths[i]);
+        }
+    }
+
+
+    // Configuration de la texture
+    GLuint cubemap_text_ID;
+    glGenTextures(1, &cubemap_text_ID);
+    glBindTexture(GL_TEXTURE_CUBE_MAP_ARB, cubemap_text_ID);
+
+    for (int i = 0; i < 6; i++)
+    {
+        glTexImage2D(cubemap_faces[i], 0, 3, texture_faces[i]->sizeX, texture_faces[i]->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, texture_faces[i]->pixels);
+
+        if (texture_faces[i])                
+        {
+            if (texture_faces[i]->pixels)    
+            {
+                free(texture_faces[i]->pixels);    
+            }
+            free(texture_faces[i]);    
+        }
+    }
+
+    glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_T, GL_CLAMP);    
+        /* FIN PARTIE SKYBOX */
+
+
     onWindowResized(800, 600, zFar, zNear, fov);    
 
     Point3D camPos = {xSize, ySize, zMax}; //Position de la camera

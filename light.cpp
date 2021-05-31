@@ -7,19 +7,14 @@
 
 
 // Dessinne la Skybox à chaque boucle
-void drawSkybox(float cam_yaw, float cam_pitch) { 
+void drawSkybox() { 
 
     float t = 1.0; // Taille du cube
     GLuint cubemap_text_ID;
     glGenTextures(1, &cubemap_text_ID);
     glBindTexture(GL_TEXTURE_CUBE_MAP_ARB, cubemap_text_ID);
     
-    glPushMatrix();
-        //Camera
-        glLoadIdentity();
-        glRotatef( cam_pitch, 1.0, 0.0, 0.0 );
-        glRotatef( cam_yaw, 0.0, 1.0, 0.0 );    
-        
+    glPushMatrix();  
         
         // Rendu
         glBegin(GL_TRIANGLE_STRIP); // Face X Négatif        

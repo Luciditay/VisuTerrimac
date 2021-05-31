@@ -16,13 +16,13 @@ typedef struct Intersection {
     // Vector3D normal;
 } Intersection;
 
-typedef struct Light {
-    Point3D position;
-    ColorRGB color;
-} Light;
+// typedef struct Light {
+//     Point3D position;
+//     ColorRGB color;
+// } Light;
 
 
-void drawSkybox(float cam_yaw, float cam_pitch, GLuint cubemap_text_ID);
+void drawSkybox();
 
 Light createLight(Point3D position, ColorRGB color);
 
