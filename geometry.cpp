@@ -73,9 +73,9 @@ void afficherTriangle(Triangle *triangle)
     glVertex3f(triangle->p3.x, triangle->p3.y, 0);
     glEnd();
 
-    afficherPoint2D(triangle->p1);
-    afficherPoint2D(triangle->p2);
-    afficherPoint2D(triangle->p3);
+    // afficherPoint2D(triangle->p1);
+    // afficherPoint2D(triangle->p2);
+    // afficherPoint2D(triangle->p3);
 }
 
 bool isInTriangle(Triangle *triangle, Point2D p1)

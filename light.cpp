@@ -3,7 +3,7 @@
 #include <GL/glu.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <light.h>
+#include "light.h"
 
 
 // Dessinne la Skybox à chaque boucle

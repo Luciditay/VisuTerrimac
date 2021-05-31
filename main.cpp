@@ -33,17 +33,30 @@ static const Uint32 FRAMERATE_MILLISECONDS = 1000 / 60;
 
 int main(int argc, char const *argv[])
 {
-    const string fichierParams = "parameters"; //Fichiers parametre.timac renommé pour tester 
-    const string texturePath1 = "texture/texture_grass_freepik.jpg";
+    const string fichierParams = (string) argv[1]; //Fichiers parametre.timac renommé pour tester 
+    const string texturePath1 = "texture/sable.jpg";
     const string texturePath2 = "texture/texture_Bleu_Chelou.jpg";
     const string texturePath3 = "texture/texture_beige.jpg";
-    
+
+    const string textureArbrePath = "texture/palmier.png";
+
+    srand (time(NULL));
+
     //Pour changer la texture renommer la texture désiré en texturePath1
     string heightMapFile;
     int xSize, ySize, zMin, zMax;
     float zNear, zFar, fov;
     
     loadParams(fichierParams, &heightMapFile, &xSize, &ySize, &zMin, &zMax, &zNear, &zFar, &fov);
+
+    int xArbre[nbreArbres];
+    int yArbre[nbreArbres];
+
+    for (int i=0; i<nbreArbres ; i++){
+        xArbre[i] =  rand() % xSize + 20;
+        yArbre[i] =  rand() % ySize + 20;
+    }
+    
     
     float imageTab[xSize * ySize];
     Image* image = (Image*) malloc(sizeof(Image));
@@ -66,6 +79,9 @@ int main(int argc, char const *argv[])
 
     SDL_Surface* texture1 = loadTexture(texturePath1);
     GLuint idTexture = textureCarteGraphique(texture1, &IDText);
+
+    SDL_Surface* textureArbre = loadTexture(textureArbrePath);
+    GLuint idTextArbre = textureCarteGraphique(textureArbre, &IDText);
 
     //Pour loader plsuieurs textures : later !
     // GLuint idTexture = textureCarteGraphique(texture2, &IDText);
@@ -134,7 +150,7 @@ int main(int argc, char const *argv[])
     onWindowResized(800, 600, zFar, zNear, fov);    
 
     Point3D camPos = {xSize, ySize, zMax}; //Position de la camera
-    Point3D lookAtDirection = {10, 10, -0.8}; //Vecteur directeur (dans quelle direction regarde la camera)
+    Point3D lookAtDirection = {-10, -10, -0.8}; //Vecteur directeur (dans quelle direction regarde la camera)
     Point3D vectCamera;
     Triangle* champCamera = (Triangle*) malloc(sizeof(Triangle));
 
@@ -146,33 +162,21 @@ int main(int argc, char const *argv[])
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
         vectCamera = add3DVect(camPos, lookAtDirection);
-        champCamera = triangleCamera(sub3DVect({(float) xSize,(float) ySize}, camPos ), lookAtDirection, fov, zFar);  
+        champCamera = triangleCamera(sub3DVect({(float) xSize/2,(float) ySize/2}, camPos ), lookAtDirection, fov, zFar);  
         
         //drawCamera( champCamera);
 
         gluLookAt(camPos.x, camPos.y, camPos.z, vectCamera.x, vectCamera.y, vectCamera.z, 0, 0, 1);        
         glTranslatef(image->w / 2.f, image->h / 2.f, 0);
         glScalef((float) xSize / image->w, (float) ySize / image->h, 1.);
-                
-                
-        //Pour le tracer de la Skybox
-        glEnable(GL_TEXTURE_CUBE_MAP_ARB); 
-        glEnable(GL_DEPTH_TEST);
-        glDisable(GL_LIGHTING);
-        glDepthMask(GL_FALSE);
 
-        drawSkybox(); //-> A compléter
-
-        glDepthMask(GL_TRUE);
-        glDisable(GL_TEXTURE_CUBE_MAP_ARB); 
-        glEnable(GL_LIGHTING);   
         
-        
+                 
         if (drawFil){
             if (drawQuadtree)
                 drawQuadTreeFil(&quadTree);
             else
-                drawTerrainFil(&quadTree);
+                drawTerrainFil(&quadTree, champCamera);
         }     
 
         else{
@@ -181,6 +185,12 @@ int main(int argc, char const *argv[])
             else
                 drawTerrainTexture(&quadTree, idTexture, champCamera, zMax, zMin);
         }
+
+        for (int i=0; i<nbreArbres; i++){
+            if (isInTriangle(champCamera, {(float) xArbre[i],(float)  yArbre[i]}))
+                drawObjet(idTextArbre, xArbre[i], yArbre[i], image->pixels, 5, zMin);
+        }
+        
         glDisable(GL_DEPTH_TEST);
 
 
@@ -249,11 +259,11 @@ int main(int argc, char const *argv[])
                             break;
 
                         case SDLK_LEFT:
-                            lookAtDirection.y+=0.3;
+                            lookAtDirection.y-=0.3;
                             break;
 
                         case SDLK_RIGHT:
-                            lookAtDirection.y-=0.3;
+                            lookAtDirection.y+=0.3;
                             break;
 
                         case SDLK_UP:
