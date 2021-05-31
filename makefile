@@ -12,7 +12,7 @@ all: projet
 projet: $(OBJ) #Projet : Tout les fichiers objets du projet
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-main.o : quadtree.h getFile.h terrain.h loadSDL.h camera.h geometry.h
+main.o : quadtree.h getFile.h terrain.h loadSDL.h camera.h geometry.h light.h colors.h shading.h
 
 %.o: %.cpp 
 	$(CC) -c $< -o $@ $(CFLAGS) 
