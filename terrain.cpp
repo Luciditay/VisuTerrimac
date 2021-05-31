@@ -17,11 +17,18 @@ float maxValue(float v1, float v2, float v3)
     return max(max(v1, v2), v3); //On compare v1 à v2 puis le résultat à v3
 }
 
-void drawObjet(GLuint idTexture, float x, float y, float **pixels, float zObjet)
+void drawObjet(GLuint idTexture, float x, float y, float **pixels, float zObjet, float zMin)
 {
+    glColor3f(1, 1, 1);
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_BLEND); 
+    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA); 
+    glBindTexture(GL_TEXTURE_2D, idTexture);
 
-    glColor3f(1, 0, 1);
+    //glColor3f(1, 0, 1);
     int zPoint = (int)pixels[(int)x][(int)y];
+
+    zObjet+=zMin-0.5;
 
     glPushMatrix();
     glTranslatef(x, y, zObjet);
@@ -29,21 +36,25 @@ void drawObjet(GLuint idTexture, float x, float y, float **pixels, float zObjet)
     // glColor3f(diffuse1,diffuse1,diffuse1);
     glBegin(GL_QUADS);
 
-    //glTexCoord2f(0, 1);
-    glVertex3f(-zObjet, -zObjet, 0);
+    glTexCoord2f(0, 1);
+    glVertex3f(-zObjet, 0, -zObjet);
 
-    //glTexCoord2f(1, 1);
-    glVertex3f(zObjet, -zObjet, 0);
+    glTexCoord2f(1, 1);
+    glVertex3f(zObjet, 0, -zObjet);
 
-    //glTexCoord2f(1, 0);
-    glVertex3f(zObjet, zObjet, 0);
+    glTexCoord2f(1, 0);
+    glVertex3f(zObjet, 0, zObjet);
 
-    //glTexCoord2f(0, 0);
-    glVertex3f(-zObjet, zObjet, 0);
+    glTexCoord2f(0, 0);
+    glVertex3f(-zObjet, 0, zObjet);
 
     glEnd();
 
     glPopMatrix();
+
+     glBindTexture(GL_TEXTURE_2D, 0);
+
+    glDisable(GL_TEXTURE_2D);
 }
 
 void drawVertex(Point3D p1)
@@ -61,7 +72,7 @@ void drawVertex2D(Point2D p1)
 void drawTriangleTextureSup(Point3D pHG, Point3D pHD, Point3D pBG, GLuint idTexture, float zMax, float zMin)
 {
     float couleur = maxValue(pHG.z, pHD.z, pBG.z);
-    glColor3f(0, (zMax - zMin) / couleur, 0);
+    glColor3f((zMax - zMin) / couleur, (zMax - zMin) / couleur, 0);
 
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, idTexture);
@@ -84,7 +95,7 @@ void drawTriangleTextureSup(Point3D pHG, Point3D pHD, Point3D pBG, GLuint idText
 void drawTriangleTextureInf(Point3D pBG, Point3D pBD, Point3D pHD, GLuint idTexture, float zMax, float zMin)
 {
     float couleur = maxValue(pBD.z, pHD.z, pBG.z);
-    glColor3f(0, (zMax - zMin) / couleur, 0);
+    glColor3f((zMax - zMin) / couleur, (zMax - zMin) / couleur, 0);
     //std::cout << couleur/(zMax - zMin)<<std::endl;
 
     glEnable(GL_TEXTURE_2D);
@@ -120,8 +131,8 @@ void drawCamera(Triangle *triangle)
 
 void drawTerrainTexture(Node *quadTree, GLuint idTexture, Triangle *triangleCamera, float zMax, float zMin)
 {
-    // if (intersectionCameraNode(triangleCamera, quadTree))
-    // {
+    if (intersectionCameraNode(triangleCamera, quadTree))
+    {
         if (isLeaf(quadTree))
         {
 
@@ -141,7 +152,7 @@ void drawTerrainTexture(Node *quadTree, GLuint idTexture, Triangle *triangleCame
             if (quadTree->nodeBD != nullptr)
                 drawTerrainTexture(quadTree->nodeBD, idTexture, triangleCamera, zMax, zMin);
         }
-    //}
+    }
 }
 
 void drawQuadTreeTexture(Node *quadtree, GLuint idtexture) {}

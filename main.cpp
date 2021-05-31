@@ -16,13 +16,7 @@
 
 using namespace std;
 
-#define GL_TEXTURE_CUBE_MAP_ARB             0x8513
-#define GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB  0x8515
-#define GL_TEXTURE_CUBE_MAP_NEGATIVE_X_ARB  0x8516
-#define GL_TEXTURE_CUBE_MAP_POSITIVE_Y_ARB  0x8517
-#define GL_TEXTURE_CUBE_MAP_NEGATIVE_Y_ARB  0x8518
-#define GL_TEXTURE_CUBE_MAP_POSITIVE_Z_ARB  0x8519
-#define GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB  0x851A
+int nbreArbres = 10;
 
 
 bool drawFil = false; //True ==> Dessiner en mode fil de fer
@@ -32,17 +26,30 @@ static const Uint32 FRAMERATE_MILLISECONDS = 1000 / 60;
 
 int main(int argc, char const *argv[])
 {
-    const string fichierParams = "parameters"; //Fichiers parametre.timac renommé pour tester 
-    const string texturePath1 = "texture/texture_grass_freepik.jpg";
+    const string fichierParams = (string) argv[1]; //Fichiers parametre.timac renommé pour tester 
+    const string texturePath1 = "texture/sable.jpg";
     const string texturePath2 = "texture/texture_Bleu_Chelou.jpg";
     const string texturePath3 = "texture/texture_beige.jpg";
-    
+
+    const string textureArbrePath = "texture/palmier.png";
+
+    srand (time(NULL));
+
     //Pour changer la texture renommer la texture désiré en texturePath1
     string heightMapFile;
     int xSize, ySize, zMin, zMax;
     float zNear, zFar, fov;
     
     loadParams(fichierParams, &heightMapFile, &xSize, &ySize, &zMin, &zMax, &zNear, &zFar, &fov);
+
+    int xArbre[nbreArbres];
+    int yArbre[nbreArbres];
+
+    for (int i=0; i<nbreArbres ; i++){
+        xArbre[i] =  rand() % xSize + 20;
+        yArbre[i] =  rand() % ySize + 20;
+    }
+    
     
     float imageTab[xSize * ySize];
     Image* image = (Image*) malloc(sizeof(Image));
@@ -66,62 +73,15 @@ int main(int argc, char const *argv[])
     SDL_Surface* texture1 = loadTexture(texturePath1);
     GLuint idTexture = textureCarteGraphique(texture1, &IDText);
 
+    SDL_Surface* textureArbre = loadTexture(textureArbrePath);
+    GLuint idTextArbre = textureCarteGraphique(textureArbre, &IDText);
+
     //Pour loader plsuieurs textures : later !
     // GLuint idTexture = textureCarteGraphique(texture2, &IDText);
     
     // SDL_Surface* texture3 = loadTexture(texturePath3);
     // GLuint idTexture = textureCarteGraphique(texture3, &IDText);
     
-
-    /* PARTIE SKYBOX */
-
-    // Liste des faces
-    GLenum cubemap_faces[6] = {           
-        GL_TEXTURE_CUBE_MAP_NEGATIVE_X_ARB,
-        GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB,
-        GL_TEXTURE_CUBE_MAP_NEGATIVE_Y_ARB,
-        GL_TEXTURE_CUBE_MAP_POSITIVE_Y_ARB,
-        GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB,
-        GL_TEXTURE_CUBE_MAP_POSITIVE_Z_ARB
-    };
-
-    // Chargement des textures
-    AUX_RGBImageRec * texture_faces[6];
-    texture_faces[0] = LoadBMP( "Skybox/right.jpg" );
-    texture_faces[1] = LoadBMP( "Skybox/left.jpg" );
-    texture_faces[2] = LoadBMP( "Skybox/top.jpg" );
-    texture_faces[3] = LoadBMP( "Skybox/bottom.jpg" );
-    texture_faces[4] = LoadBMP( "Skybox/front.jpg" );
-    texture_faces[5] = LoadBMP( "Skybox/back.jpg" );
-
-
-    // Configuration de la texture
-    GLuint cubemap_text_ID;
-    glGenTextures(1, &cubemap_text_ID);
-    glBindTexture(GL_TEXTURE_CUBE_MAP_ARB, cubemap_text_ID);
-
-    for (int i = 0; i < 6; i++)
-    {
-        glTexImage2D(cubemap_faces[i], 0, 3, texture_faces[i]->sizeX, texture_faces[i]->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, texture_faces[i]->data);
-
-        if (texture_faces[i])                
-        {
-            if (texture_faces[i]->data)    
-            {
-                free(texture_faces[i]->data);    
-            }
-            free(texture_image[i]);    
-        }
-    }
-
-    glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_T, GL_CLAMP);    
-        /* FIN PARTIE SKYBOX */
-
-    Light Soleil = createLight(createPoint(xSize/2., ySize/2., zMax+15 ), createColor(5., 5., 5.));
-
     onWindowResized(800, 600, zFar, zNear, fov);    
 
     Point3D camPos = {xSize, ySize, zMax}; //Position de la camera
@@ -161,7 +121,11 @@ int main(int argc, char const *argv[])
                 drawTerrainTexture(&quadTree, idTexture, champCamera, zMax, zMin);
         }
 
-        drawObjet(idTexture, 100, 100, image->pixels, 5);
+        for (int i=0; i<nbreArbres; i++){
+            if (isInTriangle(champCamera, {(float) xArbre[i],(float)  yArbre[i]}))
+                drawObjet(idTextArbre, xArbre[i], yArbre[i], image->pixels, 5, zMin);
+        }
+        
         glDisable(GL_DEPTH_TEST);
 
 
