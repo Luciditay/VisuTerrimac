@@ -85,9 +85,10 @@ int main(int argc, char const *argv[])
     onWindowResized(800, 600, zFar, zNear, fov);    
 
     Point3D camPos = {xSize, ySize, zMax}; //Position de la camera
-    Point3D lookAtDirection = {-10, -10, -0.8}; //Vecteur directeur (dans quelle direction regarde la camera)
+    Point3D lookAtDirection = {10, 10, -0.8}; //Vecteur directeur (dans quelle direction regarde la camera)
     Point3D vectCamera;
     Triangle* champCamera = (Triangle*) malloc(sizeof(Triangle));
+    float angleCam;
 
     int loop=1;
     while(loop){
@@ -96,16 +97,13 @@ int main(int argc, char const *argv[])
         glDisable(GL_LIGHTING);
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
+       // lookAtDirection =scale3DVect(lookAtDirection, 1/(norme3D(lookAtDirection.x, lookAtDirection.y, lookAtDirection.z)));
         vectCamera = add3DVect(camPos, lookAtDirection);
+       // vectCamera = scale3DVect(vectCamera, 1/(norme3D(vectCamera.x, vectCamera.y, vectCamera.z)));
         champCamera = triangleCamera(sub3DVect({(float) xSize/2,(float) ySize/2}, camPos ), lookAtDirection, fov, zFar);  
-        
-        //drawCamera( champCamera);
-
         gluLookAt(camPos.x, camPos.y, camPos.z, vectCamera.x, vectCamera.y, vectCamera.z, 0, 0, 1);        
         glTranslatef(image->w / 2.f, image->h / 2.f, 0);
-        glScalef((float) xSize / image->w, (float) ySize / image->h, 1.);
-
-        
+        glScalef((float) xSize / image->w, (float) ySize / image->h, 1.);        
                  
         if (drawFil){
             if (drawQuadtree)
@@ -123,16 +121,14 @@ int main(int argc, char const *argv[])
 
         for (int i=0; i<nbreArbres; i++){
             if (isInTriangle(champCamera, {(float) xArbre[i],(float)  yArbre[i]}))
-                drawObjet(idTextArbre, xArbre[i], yArbre[i], image->pixels, 5, zMin);
+                drawObjet(idTextArbre, xArbre[i], yArbre[i], image->pixels, 0, 5, zMin);
         }
         
         glDisable(GL_DEPTH_TEST);
 
-
         //glScalef((float) xSize / image->w, (float) ySize / image->h, 1.);
        // glTranslatef(image->w / 2.f, image->h / 2.f, 0);
         afficherTriangle(champCamera);
-
 
         Uint32 startTime = SDL_GetTicks();
 

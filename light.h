@@ -7,13 +7,13 @@
 
 typedef struct Ray {
     Point3D origin;
-    Vector3D direction;
+    // Vector3D direction;
 } Ray;
 
 typedef struct Intersection {
     Point3D position;
     Material material;
-    Vector3D normal;
+    // Vector3D normal;
 } Intersection;
 
 typedef struct Light {

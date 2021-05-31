@@ -4,6 +4,7 @@
 #include "quadtree.h"
 #include <iostream>
 #include "geometry.h"
+#include "camera.h"
 
 float max(float v1, float v2)
 {
@@ -17,7 +18,7 @@ float maxValue(float v1, float v2, float v3)
     return max(max(v1, v2), v3); //On compare v1 à v2 puis le résultat à v3
 }
 
-void drawObjet(GLuint idTexture, float x, float y, float **pixels, float zObjet, float zMin)
+void drawObjet(GLuint idTexture, float x, float y, float **pixels, float pan, float zObjet, float zMin)
 {
     glColor3f(1, 1, 1);
     glEnable(GL_TEXTURE_2D);
@@ -32,7 +33,8 @@ void drawObjet(GLuint idTexture, float x, float y, float **pixels, float zObjet,
 
     glPushMatrix();
     glTranslatef(x, y, zObjet);
-    // glRotatef(pan/M_PI*180,0.f,1.0f,0.f);
+    glRotatef(pan/M_PI*180,0.f,1.0f,0.f);
+
     // glColor3f(diffuse1,diffuse1,diffuse1);
     glBegin(GL_QUADS);
 
