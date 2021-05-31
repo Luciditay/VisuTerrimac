@@ -37,14 +37,14 @@ void drawTriangleTextureSup(Point3D pHG, Point3D pHD, Point3D pBG, GLuint idText
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, idTexture);
     glBegin(GL_TRIANGLES);
-    glTexCoord2f(0., 0.);
-    drawVertex(pHG);
+        glTexCoord2f(0., 0.);
+        drawVertex(pHG);
 
-    glTexCoord2f(1., 0.);
-    drawVertex(pHD);
+        glTexCoord2f(1., 0.);
+        drawVertex(pHD);
 
-    glTexCoord2f(0., 1.);
-    drawVertex(pBG);
+        glTexCoord2f(0., 1.);
+        drawVertex(pBG);
     glEnd();
 
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -62,14 +62,14 @@ void drawTriangleTextureInf(Point3D pBG, Point3D pBD, Point3D pHD, GLuint idText
     glBindTexture(GL_TEXTURE_2D, idTexture);
     glBegin(GL_TRIANGLES);
 
-    glTexCoord2f(0., 1.);
-    drawVertex(pBG);
+        glTexCoord2f(0., 1.);
+        drawVertex(pBG);
 
-    glTexCoord2f(1., 1.);
-    drawVertex(pBD);
+        glTexCoord2f(1., 1.);
+        drawVertex(pBD);
 
-    glTexCoord2f(1., 0.);
-    drawVertex(pHD);
+        glTexCoord2f(1., 0.);
+        drawVertex(pHD);
     glEnd();
 
     glBindTexture(GL_TEXTURE_2D, 0);

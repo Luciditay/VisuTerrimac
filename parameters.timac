@@ -1,8 +1,0 @@
-name visuterrimac.pgm
-x_size 300
-y_size 300
-z_min 20
-z_max 200
-z_near 
-z_far
-fov
