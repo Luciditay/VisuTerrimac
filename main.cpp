@@ -66,7 +66,7 @@ int main(int argc, char const *argv[])
     onWindowResized(800, 600, zFar, zNear, fov);    
 
     Point3D camPos = {xSize, ySize, zMax}; //Position de la camera
-    Point3D lookAtDirection = {10, 10, -0.8}; //Vecteur directeur (dans quelle direction regarde la camera)
+    Point3D lookAtDirection = {-10, -10, -0.8}; //Vecteur directeur (dans quelle direction regarde la camera)
     Point3D vectCamera;
     Triangle* champCamera = (Triangle*) malloc(sizeof(Triangle));
 
@@ -78,19 +78,21 @@ int main(int argc, char const *argv[])
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
         vectCamera = add3DVect(camPos, lookAtDirection);
-        champCamera = triangleCamera(sub3DVect({(float) xSize,(float) ySize}, camPos ), lookAtDirection, fov, zFar);  
+        champCamera = triangleCamera(sub3DVect({(float) xSize/2,(float) ySize/2}, camPos ), lookAtDirection, fov, zFar);  
         
         //drawCamera( champCamera);
 
         gluLookAt(camPos.x, camPos.y, camPos.z, vectCamera.x, vectCamera.y, vectCamera.z, 0, 0, 1);        
         glTranslatef(image->w / 2.f, image->h / 2.f, 0);
         glScalef((float) xSize / image->w, (float) ySize / image->h, 1.);
+
+        
                  
         if (drawFil){
             if (drawQuadtree)
                 drawQuadTreeFil(&quadTree);
             else
-                drawTerrainFil(&quadTree);
+                drawTerrainFil(&quadTree, champCamera);
         }     
 
         else{
@@ -99,6 +101,8 @@ int main(int argc, char const *argv[])
             else
                 drawTerrainTexture(&quadTree, idTexture, champCamera, zMax, zMin);
         }
+
+        drawObjet(idTexture, 100, 100, image->pixels, 5);
         glDisable(GL_DEPTH_TEST);
 
 
@@ -167,11 +171,11 @@ int main(int argc, char const *argv[])
                             break;
 
                         case SDLK_LEFT:
-                            lookAtDirection.y+=0.3;
+                            lookAtDirection.y-=0.3;
                             break;
 
                         case SDLK_RIGHT:
-                            lookAtDirection.y-=0.3;
+                            lookAtDirection.y+=0.3;
                             break;
 
                         case SDLK_UP:

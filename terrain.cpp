@@ -17,6 +17,35 @@ float maxValue(float v1, float v2, float v3)
     return max(max(v1, v2), v3); //On compare v1 à v2 puis le résultat à v3
 }
 
+void drawObjet(GLuint idTexture, float x, float y, float **pixels, float zObjet)
+{
+
+    glColor3f(1, 0, 1);
+    int zPoint = (int)pixels[(int)x][(int)y];
+
+    glPushMatrix();
+    glTranslatef(x, y, zObjet);
+    // glRotatef(pan/M_PI*180,0.f,1.0f,0.f);
+    // glColor3f(diffuse1,diffuse1,diffuse1);
+    glBegin(GL_QUADS);
+
+    //glTexCoord2f(0, 1);
+    glVertex3f(-zObjet, -zObjet, 0);
+
+    //glTexCoord2f(1, 1);
+    glVertex3f(zObjet, -zObjet, 0);
+
+    //glTexCoord2f(1, 0);
+    glVertex3f(zObjet, zObjet, 0);
+
+    //glTexCoord2f(0, 0);
+    glVertex3f(-zObjet, zObjet, 0);
+
+    glEnd();
+
+    glPopMatrix();
+}
+
 void drawVertex(Point3D p1)
 {
     //glColor3f(0 / 100.f, 0 / 100.f, p1.z /100.f);
@@ -91,8 +120,8 @@ void drawCamera(Triangle *triangle)
 
 void drawTerrainTexture(Node *quadTree, GLuint idTexture, Triangle *triangleCamera, float zMax, float zMin)
 {
-    //if (intersectionCameraNode(triangleCamera, quadTree))
-    //{
+    // if (intersectionCameraNode(triangleCamera, quadTree))
+    // {
         if (isLeaf(quadTree))
         {
 
@@ -112,7 +141,7 @@ void drawTerrainTexture(Node *quadTree, GLuint idTexture, Triangle *triangleCame
             if (quadTree->nodeBD != nullptr)
                 drawTerrainTexture(quadTree->nodeBD, idTexture, triangleCamera, zMax, zMin);
         }
-  // }
+    //}
 }
 
 void drawQuadTreeTexture(Node *quadtree, GLuint idtexture) {}
@@ -121,6 +150,8 @@ void drawQuadTreeTexture(Node *quadtree, GLuint idtexture) {}
 
 void drawQuadTreeFil(Node *quadTree)
 {
+    // if (intersectionCameraNode(quadTree))
+    // {
     if (isLeaf(quadTree))
         glColor3f(0, 1, 1);
 
@@ -142,36 +173,40 @@ void drawQuadTreeFil(Node *quadTree)
         drawQuadTreeFil(quadTree->nodeBD);
     if (quadTree->nodeBG != nullptr)
         drawQuadTreeFil(quadTree->nodeBG);
+    // }
 }
 
-void drawTerrainFil(Node *quadTree)
+void drawTerrainFil(Node *quadTree, Triangle *triangleCamera)
 {
-    if (isLeaf(quadTree))
-    {
-        glColor3f(0 / 100.f, 1, 1);
-        glBegin(GL_LINES);
-        drawVertex(quadTree->pointHG);
-        drawVertex(quadTree->pointHD);
-        drawVertex(quadTree->pointBG);
-        drawVertex(quadTree->pointHG);
-        glEnd();
-        glColor3f(1, 1, 0);
-        glBegin(GL_LINES);
-        drawVertex(quadTree->pointBG);
-        drawVertex(quadTree->pointBD);
-        drawVertex(quadTree->pointHD);
-        drawVertex(quadTree->pointBG);
-        glEnd();
-    }
-    else
-    {
-        if (quadTree->nodeHG != nullptr)
-            drawTerrainFil(quadTree->nodeHG);
-        if (quadTree->nodeHD != nullptr)
-            drawTerrainFil(quadTree->nodeHD);
-        if (quadTree->nodeBG != nullptr)
-            drawTerrainFil(quadTree->nodeBG);
-        if (quadTree->nodeBD != nullptr)
-            drawTerrainFil(quadTree->nodeBD);
-    }
+    //if (intersectionCameraNode(triangleCamera, quadTree))
+    //{
+        if (isLeaf(quadTree))
+        {
+            glColor3f(0 / 100.f, 1, 1);
+            glBegin(GL_LINES);
+            drawVertex(quadTree->pointHG);
+            drawVertex(quadTree->pointHD);
+            drawVertex(quadTree->pointBG);
+            drawVertex(quadTree->pointHG);
+            glEnd();
+            glColor3f(1, 1, 0);
+            glBegin(GL_LINES);
+            drawVertex(quadTree->pointBG);
+            drawVertex(quadTree->pointBD);
+            drawVertex(quadTree->pointHD);
+            drawVertex(quadTree->pointBG);
+            glEnd();
+        }
+        else
+        {
+            if (quadTree->nodeHG != nullptr)
+                drawTerrainFil(quadTree->nodeHG, triangleCamera);
+            if (quadTree->nodeHD != nullptr)
+                drawTerrainFil(quadTree->nodeHD, triangleCamera);
+            if (quadTree->nodeBG != nullptr)
+                drawTerrainFil(quadTree->nodeBG, triangleCamera);
+            if (quadTree->nodeBD != nullptr)
+                drawTerrainFil(quadTree->nodeBD, triangleCamera);
+        }
+  //  }
 }
