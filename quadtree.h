@@ -13,7 +13,7 @@ struct Point3D {
     float z;
 };
  
-typedef struct Node// Each node contains 4 points forming the border of the square it covers. If it is a leaf ==> the four nodes will be set to NULL, 
+struct Node// Each node contains 4 points forming the border of the square it covers. If it is a leaf ==> the four nodes will be set to NULL, 
                // and the four point will be 4 pixels                         
 {
     Point3D pointHG;  // *-----*
@@ -25,7 +25,7 @@ typedef struct Node// Each node contains 4 points forming the border of the squa
     Node* nodeHD = nullptr;
     Node* nodeBG = nullptr;
     Node* nodeBD = nullptr;
-} Node; // ==> One quadTree : The node, whose 4 points will be the corner of the heigt map
+}; // ==> One quadTree : The node, whose 4 points will be the corner of the heigt map
 
 Point3D milieuSegment(Point3D p1, Point3D p2, float** image);
 

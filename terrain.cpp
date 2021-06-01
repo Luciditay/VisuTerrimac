@@ -22,18 +22,18 @@ void drawObjet(GLuint idTexture, float x, float y, float **pixels, float pan, fl
 {
     glColor3f(1, 1, 1);
     glEnable(GL_TEXTURE_2D);
-    glEnable(GL_BLEND); 
-    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA); 
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glBindTexture(GL_TEXTURE_2D, idTexture);
 
     //glColor3f(1, 0, 1);
-    int zPoint = (int)pixels[(int)x][(int)y];
+    //int zPoint = (int)pixels[(int)x][(int)y];
 
-    zObjet+=zMin-0.5;
+    zObjet += zMin - 0.5;
 
     glPushMatrix();
     glTranslatef(x, y, zObjet);
-    glRotatef(pan/M_PI*180,0.f,1.0f,0.f);
+    glRotatef(pan / M_PI * 180, 0.f, 1.0f, 0.f);
 
     // glColor3f(diffuse1,diffuse1,diffuse1);
     glBegin(GL_QUADS);
@@ -54,7 +54,7 @@ void drawObjet(GLuint idTexture, float x, float y, float **pixels, float pan, fl
 
     glPopMatrix();
 
-     glBindTexture(GL_TEXTURE_2D, 0);
+    glBindTexture(GL_TEXTURE_2D, 0);
 
     glDisable(GL_TEXTURE_2D);
 }
@@ -79,14 +79,14 @@ void drawTriangleTextureSup(Point3D pHG, Point3D pHD, Point3D pBG, GLuint idText
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, idTexture);
     glBegin(GL_TRIANGLES);
-        glTexCoord2f(0., 0.);
-        drawVertex(pHG);
+    glTexCoord2f(0., 0.);
+    drawVertex(pHG);
 
-        glTexCoord2f(1., 0.);
-        drawVertex(pHD);
+    glTexCoord2f(1., 0.);
+    drawVertex(pHD);
 
-        glTexCoord2f(0., 1.);
-        drawVertex(pBG);
+    glTexCoord2f(0., 1.);
+    drawVertex(pBG);
     glEnd();
 
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -104,14 +104,14 @@ void drawTriangleTextureInf(Point3D pBG, Point3D pBD, Point3D pHD, GLuint idText
     glBindTexture(GL_TEXTURE_2D, idTexture);
     glBegin(GL_TRIANGLES);
 
-        glTexCoord2f(0., 1.);
-        drawVertex(pBG);
+    glTexCoord2f(0., 1.);
+    drawVertex(pBG);
 
-        glTexCoord2f(1., 1.);
-        drawVertex(pBD);
+    glTexCoord2f(1., 1.);
+    drawVertex(pBD);
 
-        glTexCoord2f(1., 0.);
-        drawVertex(pHD);
+    glTexCoord2f(1., 0.);
+    drawVertex(pHD);
     glEnd();
 
     glBindTexture(GL_TEXTURE_2D, 0);
@@ -131,14 +131,36 @@ void drawCamera(Triangle *triangle)
     glDisable(GL_TEXTURE_2D);
 }
 
-void drawTerrainTexture(Node *quadTree, GLuint idTexture, Triangle *triangleCamera, float zMax, float zMin)
+void drawTerrainTexture(Node *quadTree, GLuint idTexture, Triangle *triangleCamera, float zMax, float zMin, bool frustum)
 {
-    if (intersectionCameraNode(triangleCamera, quadTree))
+    if (frustum) //On applique le frustum ou non
+    {
+        if (intersectionCameraNode(triangleCamera, quadTree)) //Si intersection ==> On poursuit la descente de l'arbre
+        {
+            if (isLeaf(quadTree))
+            {
+                drawTriangleTextureSup(quadTree->pointHG, quadTree->pointHD, quadTree->pointBG, idTexture, zMax, zMin);
+                drawTriangleTextureInf(quadTree->pointBG, quadTree->pointBD, quadTree->pointHD, idTexture, zMax, zMin);
+            }
+
+            else
+            {
+                if (quadTree->nodeHG != nullptr)
+                    drawTerrainTexture(quadTree->nodeHG, idTexture, triangleCamera, zMax, zMin, frustum);
+                if (quadTree->nodeHD != nullptr)
+                    drawTerrainTexture(quadTree->nodeHD, idTexture, triangleCamera, zMax, zMin, frustum);
+                if (quadTree->nodeBG != nullptr)
+                    drawTerrainTexture(quadTree->nodeBG, idTexture, triangleCamera, zMax, zMin, frustum);
+                if (quadTree->nodeBD != nullptr)
+                    drawTerrainTexture(quadTree->nodeBD, idTexture, triangleCamera, zMax, zMin, frustum);
+            }
+        }
+    }
+
+    else
     {
         if (isLeaf(quadTree))
         {
-
-            //afficherNode(quadTree);
             drawTriangleTextureSup(quadTree->pointHG, quadTree->pointHD, quadTree->pointBG, idTexture, zMax, zMin);
             drawTriangleTextureInf(quadTree->pointBG, quadTree->pointBD, quadTree->pointHD, idTexture, zMax, zMin);
         }
@@ -146,22 +168,22 @@ void drawTerrainTexture(Node *quadTree, GLuint idTexture, Triangle *triangleCame
         else
         {
             if (quadTree->nodeHG != nullptr)
-                drawTerrainTexture(quadTree->nodeHG, idTexture, triangleCamera, zMax, zMin);
+                drawTerrainTexture(quadTree->nodeHG, idTexture, triangleCamera, zMax, zMin, frustum);
             if (quadTree->nodeHD != nullptr)
-                drawTerrainTexture(quadTree->nodeHD, idTexture, triangleCamera, zMax, zMin);
+                drawTerrainTexture(quadTree->nodeHD, idTexture, triangleCamera, zMax, zMin, frustum);
             if (quadTree->nodeBG != nullptr)
-                drawTerrainTexture(quadTree->nodeBG, idTexture, triangleCamera, zMax, zMin);
+                drawTerrainTexture(quadTree->nodeBG, idTexture, triangleCamera, zMax, zMin, frustum);
             if (quadTree->nodeBD != nullptr)
-                drawTerrainTexture(quadTree->nodeBD, idTexture, triangleCamera, zMax, zMin);
+                drawTerrainTexture(quadTree->nodeBD, idTexture, triangleCamera, zMax, zMin, frustum);
         }
     }
 }
 
-void drawQuadTreeTexture(Node *quadtree, GLuint idtexture) {}
+void drawQuadTreeTexture(Node *quadtree, GLuint idtexture, bool frustum) {}
 
 //Fonction qui dessine un terrain sans texture : non utilisé
 
-void drawQuadTreeFil(Node *quadTree)
+void drawQuadTreeFil(Node *quadTree, bool frustum)
 {
     // if (intersectionCameraNode(quadTree))
     // {
@@ -179,20 +201,55 @@ void drawQuadTreeFil(Node *quadTree)
     glEnd();
 
     if (quadTree->nodeHG != nullptr)
-        drawQuadTreeFil(quadTree->nodeHG);
+        drawQuadTreeFil(quadTree->nodeHG, frustum);
     if (quadTree->nodeHD != nullptr)
-        drawQuadTreeFil(quadTree->nodeHD);
+        drawQuadTreeFil(quadTree->nodeHD, frustum);
     if (quadTree->nodeBD != nullptr)
-        drawQuadTreeFil(quadTree->nodeBD);
+        drawQuadTreeFil(quadTree->nodeBD, frustum);
     if (quadTree->nodeBG != nullptr)
-        drawQuadTreeFil(quadTree->nodeBG);
+        drawQuadTreeFil(quadTree->nodeBG, frustum);
     // }
 }
 
-void drawTerrainFil(Node *quadTree, Triangle *triangleCamera)
+void drawTerrainFil(Node *quadTree, Triangle *triangleCamera, bool frustum)
 {
-    //if (intersectionCameraNode(triangleCamera, quadTree))
-    //{
+    if (frustum)
+    {
+        if (intersectionCameraNode(triangleCamera, quadTree))
+        {
+            if (isLeaf(quadTree))
+            {
+                glColor3f(0 / 100.f, 1, 1);
+                glBegin(GL_LINES);
+                drawVertex(quadTree->pointHG);
+                drawVertex(quadTree->pointHD);
+                drawVertex(quadTree->pointBG);
+                drawVertex(quadTree->pointHG);
+                glEnd();
+                glColor3f(1, 1, 0);
+                glBegin(GL_LINES);
+                drawVertex(quadTree->pointBG);
+                drawVertex(quadTree->pointBD);
+                drawVertex(quadTree->pointHD);
+                drawVertex(quadTree->pointBG);
+                glEnd();
+            }
+            else
+            {
+                if (quadTree->nodeHG != nullptr)
+                    drawTerrainFil(quadTree->nodeHG, triangleCamera, frustum);
+                if (quadTree->nodeHD != nullptr)
+                    drawTerrainFil(quadTree->nodeHD, triangleCamera, frustum);
+                if (quadTree->nodeBG != nullptr)
+                    drawTerrainFil(quadTree->nodeBG, triangleCamera, frustum);
+                if (quadTree->nodeBD != nullptr)
+                    drawTerrainFil(quadTree->nodeBD, triangleCamera, frustum);
+            }
+        }
+    }
+
+    else
+    {
         if (isLeaf(quadTree))
         {
             glColor3f(0 / 100.f, 1, 1);
@@ -213,13 +270,13 @@ void drawTerrainFil(Node *quadTree, Triangle *triangleCamera)
         else
         {
             if (quadTree->nodeHG != nullptr)
-                drawTerrainFil(quadTree->nodeHG, triangleCamera);
+                drawTerrainFil(quadTree->nodeHG, triangleCamera, frustum);
             if (quadTree->nodeHD != nullptr)
-                drawTerrainFil(quadTree->nodeHD, triangleCamera);
+                drawTerrainFil(quadTree->nodeHD, triangleCamera, frustum);
             if (quadTree->nodeBG != nullptr)
-                drawTerrainFil(quadTree->nodeBG, triangleCamera);
+                drawTerrainFil(quadTree->nodeBG, triangleCamera, frustum);
             if (quadTree->nodeBD != nullptr)
-                drawTerrainFil(quadTree->nodeBD, triangleCamera);
+                drawTerrainFil(quadTree->nodeBD, triangleCamera, frustum);
         }
-  //  }
+    }
 }

@@ -22,8 +22,6 @@ typedef struct Intersection {
 // } Light;
 
 
-void drawSkybox();
-
-Light createLight(Point3D position, ColorRGB color);
+void drawSkybox(GLuint* textureCielID, float lenght);
 
 #endif 

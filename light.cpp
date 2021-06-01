@@ -7,65 +7,74 @@
 
 
 // Dessinne la Skybox à chaque boucle
-void drawSkybox() { 
+void drawSkybox(GLuint* textureCielID, float lenght) { 
 
-    float t = 1.0; // Taille du cube
-    GLuint cubemap_text_ID;
-    glGenTextures(1, &cubemap_text_ID);
-    glBindTexture(GL_TEXTURE_CUBE_MAP_ARB, cubemap_text_ID);
+    float couleurActuelle[4];
+    glGetFloatv(GL_CURRENT_COLOR, couleurActuelle);
+    float l = lenght/2; // Taille du cube
+    glEnable(GL_TEXTURE_2D);
+   
     
-    glPushMatrix();  
+    glColor3f(120, 120, 120);
         
-        // Rendu
-        glBegin(GL_TRIANGLE_STRIP); // Face X Négatif        
-            glTexCoord3f(-t,-t,-t); glVertex3f(-t,-t,-t);     
-            glTexCoord3f(-t,t,-t); glVertex3f(-t,t,-t);
-            glTexCoord3f(-t,-t,t); glVertex3f(-t,-t,t);
-            glTexCoord3f(-t,t,t); glVertex3f(-t,t,t);
-        glEnd();
+    glBindTexture(GL_TEXTURE_2D, textureCielID[5]);
+    glBegin(GL_QUADS);
+        glTexCoord2f(1.,1.); glVertex3f(-l , l, -l);
+        glTexCoord2f(1.,0.); glVertex3f(-l , l, l);
+        glTexCoord2f(0.,0.); glVertex3f(l , l, l);
+        glTexCoord2f(0.,1.); glVertex3f(l , l, -l);
+    glEnd();
+
+   /* ================ 4 | FLOOR ================ */ 
+    glBindTexture(GL_TEXTURE_2D, textureCielID[4]);
+    glBegin(GL_QUADS);
         
-        glBegin(GL_TRIANGLE_STRIP); // Face X Positif
-            glTexCoord3f(t, -t,-t); glVertex3f(t,-t,-t);
-            glTexCoord3f(t,-t,t); glVertex3f(t,-t,t);
-            glTexCoord3f(t,t,-t); glVertex3f(t,t,-t); 
-            glTexCoord3f(t,t,t); glVertex3f(t,t,t);     
-        glEnd();
+        glTexCoord2f(1.,0.); glVertex3f(-l , -l, -l);
+        glTexCoord2f(0.,0.); glVertex3f(l , -l, -l);
+        glTexCoord2f(0.,1.); glVertex3f(l , -l, l);
+        glTexCoord2f(1.,1.);glVertex3f(-l , -l, l);
+    glEnd();
+    /* ================ 0 | Back ================ */    
+    glBindTexture(GL_TEXTURE_2D, textureCielID[0]);
+    glBegin(GL_QUADS);
+        glTexCoord2f(1.,1.); glVertex3f(l , -l, l);
+        glTexCoord2f(1.,0.); glVertex3f(l , l, l);
+        glTexCoord2f(0.,0.); glVertex3f(-l , l, l);
+        glTexCoord2f(0.,1.); glVertex3f(-l , -l, l);
+    glEnd();
+    
+
+    /* ================ 1 | Front ================ */    
+    glBindTexture(GL_TEXTURE_2D, textureCielID[1]);
+    glBegin(GL_QUADS);
         
-        glBegin(GL_TRIANGLE_STRIP); // Face Y Négatif    
-            glTexCoord3f(-t,-t,-t); glVertex3f(-t,-t,-t);
-            glTexCoord3f(-t,-t,t); glVertex3f(-t,-t,t);
-            glTexCoord3f(t, -t,-t); glVertex3f(t,-t,-t);
-            glTexCoord3f(t,-t,t); glVertex3f(t,-t,t);
-        glEnd();
-        
-        glBegin(GL_TRIANGLE_STRIP); // Face Y Positif        
-            glTexCoord3f(-t,t,-t); glVertex3f(-t,t,-t);
-            glTexCoord3f(t,t,-t); glVertex3f(t,t,-t); 
-            glTexCoord3f(-t,t,t); glVertex3f(-t,t,t);
-            glTexCoord3f(t,t,t); glVertex3f(t,t,t);     
-        glEnd();
-        
-        glBegin(GL_TRIANGLE_STRIP); // Face Z Négatif        
-            glTexCoord3f(-t,-t,-t); glVertex3f(-t,-t,-t);
-            glTexCoord3f(t, -t,-t); glVertex3f(t,-t,-t);
-            glTexCoord3f(-t,t,-t); glVertex3f(-t,t,-t);
-            glTexCoord3f(t,t,-t); glVertex3f(t,t,-t); 
-        glEnd();
-        
-        glBegin(GL_TRIANGLE_STRIP); // Face Z Positif    
-            glTexCoord3f(-t,-t,t); glVertex3f(-t,-t,t);
-            glTexCoord3f(-t,t,t); glVertex3f(-t,t,t);
-            glTexCoord3f(t,-t,t); glVertex3f(t,-t,t);
-            glTexCoord3f(t,t,t); glVertex3f(t,t,t);     
-        glEnd();
-    glPopMatrix();
-}
+        glTexCoord2f(1.,1.); glVertex3f(-l , -l, -l);
+        glTexCoord2f(1.,0.); glVertex3f(-l , l, -l);
+        glTexCoord2f(0.,0.); glVertex3f(l , l, -l);
+        glTexCoord2f(0.,1.); glVertex3f(l , -l, -l);
+    glEnd();
+
+    
+   /* ================ 2 | Left ================ */
+    glBindTexture(GL_TEXTURE_2D, textureCielID[2]);
+    glBegin(GL_QUADS);
+        glTexCoord2f(1.,1.); glVertex3f(l , -l, -l);
+        glTexCoord2f(1.,0.); glVertex3f(l , l, -l);
+        glTexCoord2f(0.,0.); glVertex3f(l , l, l);
+        glTexCoord2f(0.,1.); glVertex3f(l , -l, l);
+    glEnd();
 
 
 
-Light createLight(Point3D position, ColorRGB color) {
-    Light l;
-    l.position = position;
-    l.color = color;
-    return l;
+   /* ================ 3 | Right ================ */ 
+    glBindTexture(GL_TEXTURE_2D, textureCielID[3]);
+    glBegin(GL_QUADS);
+        glTexCoord2f(1.,1.);  glVertex3f(-l,-l,l);
+        glTexCoord2f(1.,0.); glVertex3f(-l,l,l);
+        glTexCoord2f(0.,0.);glVertex3f(-l,l,-l);
+        glTexCoord2f(0.,1.); glVertex3f(-l,-l,-l);
+    glEnd();
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glDisable(GL_TEXTURE_2D);   
 }

@@ -108,7 +108,8 @@ GLuint textureCarteGraphique(SDL_Surface* texture, int* IDTexture){
         format, GL_UNSIGNED_BYTE, texture->pixels
     );
     glBindTexture(GL_TEXTURE_2D, 0);
-    *IDTexture++;
+
+    SDL_FreeSurface(texture);
     return idTexture;
 }
 
