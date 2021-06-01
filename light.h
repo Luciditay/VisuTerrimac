@@ -2,24 +2,7 @@
 #define LIGHT_H
 
 #include <GL/glu.h>
-#include "shading.h"
 #include "geometry.h"
-
-typedef struct Ray {
-    Point3D origin;
-    // Vector3D direction;
-} Ray;
-
-typedef struct Intersection {
-    Point3D position;
-    Material material;
-    // Vector3D normal;
-} Intersection;
-
-// typedef struct Light {
-//     Point3D position;
-//     ColorRGB color;
-// } Light;
 
 
 void drawSkybox(GLuint* textureCielID, float lenght);
