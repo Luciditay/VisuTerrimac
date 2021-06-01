@@ -160,7 +160,10 @@ int main(int argc, char const *argv[])
                 if (isInTriangle(champCamera, {(float)xArbre[i], (float)yArbre[i]}))
                     drawObjet(idTextArbre, xArbre[i], yArbre[i], image->pixels, 0, 5, zMin);
             }
-            drawObjet(idTextArbre, xArbre[i], yArbre[i], image->pixels, 0, 5, zMin);
+            else{
+                drawObjet(idTextArbre, xArbre[i], yArbre[i], image->pixels, 0, 5, zMin);
+            }
+            
         }
 
        if (affichageCamera)
